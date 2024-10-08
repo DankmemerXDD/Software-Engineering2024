@@ -1,0 +1,62 @@
+.container {
+    background-color: #E1F5FE;  
+    padding: 20px;
+    border-radius: 10px;
+    width: 300px;
+    margin: auto;
+    text-align: enter;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);  
+  }
+  
+  h2 {
+    color: #4A90E2; 
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+  }
+  
+  .enhetsliste {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;  
+  }
+  
+  .enhet-item {
+    background-color: #F2F4F7; 
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 5px;
+    font-weight: bold;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);  
+  }
+  
+  .fjern-knapp {
+    background-color: #F5A623; 
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .legg-til-knapp {
+    background-color: #7ED321; 
+    border: none;
+    color: white;
+    font-size: 2rem;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 20px auto 0;  
+  }
+  
