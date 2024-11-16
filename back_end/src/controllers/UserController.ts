@@ -5,9 +5,15 @@ import { Context } from 'hono';
 
 export const getAllUsers = (c: Context) => {
   try {
-    const stmt = db.prepare('SELECT * FROM users');
-    const rows = stmt.all() as { id: string; username: string; password: string }[];
-    const users = rows.map(mapUserToRow);
+    console.log('Fetching all users from the database...');
+    const stmt = db.prepare('SELECT username, image, membership FROM users');
+    const rows = stmt.all() as { username: string; image?: string; membership?: string }[];
+    const users = rows.map(row => ({
+      username: row.username,
+      membership: row.membership || 'N/A',
+      image: row.image || 'No image available'
+    }));
+    console.log('Users fetched successfully');
     return c.json(users);
   } catch (error) {
     console.error('Error fetching users:', error);
@@ -17,10 +23,19 @@ export const getAllUsers = (c: Context) => {
 
 export const createUser = async (c: Context) => {
   try {
+    console.log('Creating a new user...');
     const user: User = await c.req.json();
-    const stmt = db.prepare('INSERT INTO users (id, username, password) VALUES (?, ?, ?)');
-    const row = mapUserToRow(user);
-    stmt.run(row.id, row.username, row.password);
+    const existingUser = db.prepare('SELECT * FROM users WHERE username = ?').get(user.username);
+
+    if (existingUser) {
+      console.error(`User ${user.username} already exists`);
+      return c.json({ error: 'Username already exists' }, 400);
+    }
+
+    const stmt = db.prepare('INSERT INTO users (username, password, image, membership) VALUES (?, ?, ?, ?)');
+    stmt.run(user.username, user.password, user.image || null, user.membership || null);
+
+    console.log(`User ${user.username} created successfully`);
     return c.json(user, 201);
   } catch (error) {
     console.error('Error creating user:', error);

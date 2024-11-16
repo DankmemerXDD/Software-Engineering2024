@@ -5,6 +5,7 @@ const API_BASE_URL = 'http://localhost:6969';
 export const fetchDevices = async () => {
   const response = await fetch(`${API_BASE_URL}/IotEnheter`);
   if (!response.ok) {
+    console.error(`Feil ved henting av enheter: ${response.status}`);
     throw new Error(`Server error: ${response.status}`);
   }
   return response.json();
@@ -17,6 +18,7 @@ export const addDevice = async (deviceName: string) => {
     body: JSON.stringify({ name: deviceName }),
   });
   if (!response.ok) {
+    console.error('Feil ved opprettelse av enhet');
     throw new Error('Error adding device');
   }
   return response.json();
@@ -34,6 +36,7 @@ export const login = async (credentials: LoginInformation) => {
   });
   
   if (!response.ok) {
+    console.error('Innlogging feilet');
     throw new Error('Login failed. Check your credentials.');
   }
   return response.json();
@@ -47,6 +50,7 @@ export const register = async (credentials: LoginInformation) => {
   });
   
   if (!response.ok) {
+    console.error('Registrering feilet');
     throw new Error('Registration failed. Username may be taken.');
   }
   return response.json();

@@ -6,25 +6,25 @@ export const seed = async (db: DB) => {
   const path = join(__dirname, 'data.json');
   const file = await readFile(path, 'utf-8');
   const { users, devices } = JSON.parse(file) as {
-    users: { username: string; password: string }[];
+    users: { username: string; password: string; membership?: string; image?: string }[];
     devices: { id: string; name: string; type: string; user_id: string; purchased_at: string; status: string }[];
   };
 
   const insertUser = db.prepare(`
-    INSERT INTO users (username, password) 
-    VALUES (?, ?)
+    INSERT INTO users (username, password, membership, image)
+    VALUES (?, ?, ?, ?)
     ON CONFLICT (username) DO NOTHING
   `);
 
   const insertDevice = db.prepare(`
-    INSERT INTO devices (id, name, type, user_id, purchased_at, status) 
+    INSERT INTO devices (id, name, type, user_id, purchased_at, status)
     VALUES (?, ?, ?, ?, ?, ?)
     ON CONFLICT (id) DO NOTHING
   `);
 
   db.transaction(() => {
     for (const user of users) {
-      insertUser.run(user.username, user.password);
+      insertUser.run(user.username, user.password, user.membership ?? null, user.image ?? null);
     }
 
     for (const device of devices) {

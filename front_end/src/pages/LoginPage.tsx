@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { login, register } from '../../api';
 
 interface LoginPageProps {
-  onLogin: (userData: any) => void;
+  onLogin: (username: string) => void;
 }
 
 const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
@@ -26,16 +26,20 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     try {
       if (isRegistering) {
         await register(credentials);
         setMessage('Bruker registrert! Du kan nå logge inn.');
         setIsRegistering(false);
       } else {
-        const userData = await login(credentials);
-        onLogin(userData);
-        navigate('/IotEnheter');
+        const userData = await login(credentials); // Assumes `userData` contains `{ username: string }`
+        if (userData && userData.username) {
+          console.log('Brukeren ble logget inn med brukernavn:', userData.username);
+          onLogin(userData.username);
+          navigate('/IotEnheter');
+        } else {
+          setMessage('Feil ved innlogging. Mangler brukernavn i responsen.');
+        }
       }
     } catch (error) {
       setMessage(error instanceof Error ? error.message : 'Noe gikk galt. Prøv igjen.');

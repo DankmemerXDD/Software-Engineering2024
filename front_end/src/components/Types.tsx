@@ -24,5 +24,7 @@ export type LoginProps = {
 
 export type ProfileData = {
   name: string;
-  image: string;
+  image?: string;
+  membership?: string; 
+  iotDevices?: string[]; 
 };
