@@ -1,12 +1,12 @@
-import React from 'react';
-
 export type DeviceData = {
+  id: number;
   device_name: string;
   device_status: boolean;
   device_version: string;
   device_description: string;
   device_image: string;
-};  
+  user_id: number;
+};
 
 export type LoginInformation = {
   username: string;
@@ -24,7 +24,5 @@ export type LoginProps = {
 
 export type ProfileData = {
   name: string;
-  image?: string;
-  membership?: string; 
-  iotDevices?: string[]; 
+  image: string;
 };

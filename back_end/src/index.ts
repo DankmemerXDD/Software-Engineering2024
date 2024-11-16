@@ -5,7 +5,9 @@ import { cors } from 'hono/cors';
 import * as authController from './controllers/authController';
 import * as iotDeviceController from './controllers/iotDeviceController';
 import * as userController from './controllers/UserController';
-import { findUserByUsername } from './repository/userRepository'; // Import the function
+
+import db from '../src/db/db';
+import { setup } from '../src/db/setup';
 
 const app = new Hono();
 
@@ -13,21 +15,13 @@ app.use(
   '*',
   cors({
     origin: 'http://localhost:5173',
+    credentials: true,
+    allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowHeaders: ['Content-Type', 'Authorization'],
   })
 );
 
-// Example backend logic for /login
-app.post('/login', async (c) => {
-  const { username, password } = await c.req.json();
-  const user = findUserByUsername(username);
-
-  if (user && user.password === password) {
-    return c.json({ username: user.username }); // Ensure this response is returned
-  } else {
-    return c.json({ error: 'Invalid credentials' }, 401);
-  }
-});
-
+app.post('/login', authController.login);
 app.post('/register', authController.register);
 
 app.get('/IotEnheter', iotDeviceController.getAllDevices);
@@ -39,11 +33,25 @@ app.delete('/IotEnheter/:id', iotDeviceController.deleteDevice);
 app.get('/users', userController.getAllUsers);
 app.post('/users', userController.createUser);
 
+
 const port = 6969;
 
-serve({
-  fetch: app.fetch,
-  port: port,
-});
+const startServer = async () => {
+  try {
+    console.log('Initializing database setup...');
+    await setup(db);
+    console.log('Database setup completed successfully.');
 
-console.log(`Server is running on port ${port}`);
+    serve({
+      fetch: app.fetch,
+      port: port,
+    });
+
+    console.log(`Server is running on port ${port}`);
+  } catch (error) {
+    console.error('Failed to initialize the server:', error);
+    process.exit(1);
+  }
+};
+
+startServer();

@@ -1,34 +1,20 @@
 import db from '../db/db';
 import { User } from '../models/User';
+import { mapRowToUser } from '../mappers/UserMapper';
 
-// Define the type of row expected from the database
-interface UserRow {
-  username: string;
-  password: string;
-  image?: string;
-  membership?: string;
-}
-
-// Function to find a user by their username
 export const findUserByUsername = (username: string): User | undefined => {
-  const row = db.prepare('SELECT username, password, image, membership FROM users WHERE username = ?').get(username) as UserRow | undefined;
-
-  if (row) {
-    return {
-      username: row.username,
-      password: row.password,
-      image: row.image || undefined,
-      membership: row.membership || undefined,
-    } as User;
-  }
-
-  return undefined;
+  const row = db.prepare('SELECT * FROM users WHERE username = ?').get(username);
+  return row ? mapRowToUser(row) : undefined;
 };
 
-// Function to create a new user
-export const createUser = (user: User): void => {
-  db.prepare('INSERT INTO users (username, password) VALUES (?, ?)').run(
-    user.username,
-    user.password
-  );
+export const createUser = (user: User): User => {
+  const stmt = db.prepare('INSERT INTO users (username, password) VALUES (?, ?)');
+  const result = stmt.run(user.username, user.password);
+  const insertedId = Number(result.lastInsertRowid);
+
+  return {
+    id: insertedId,
+    username: user.username,
+    password: user.password,
+  };
 };
